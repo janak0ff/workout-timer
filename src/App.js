@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import Calculator from "./Calculator";
 import ToggleSounds from "./ToggleSounds";
 
+// Format the time
 function formatTime(date) {
   return new Intl.DateTimeFormat("en", {
-    month: "short",
-    year: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
+    month: "short", // Abbreviated month name (e.g. Jan, Feb, etc.)
+    year: "2-digit", // 2-digit year (e.g. 22 for 2022)
+    hour: "2-digit", // 2-digit hour (e.g. 01, 12, etc.)
+    minute: "2-digit", // 2-digit minute (e.g. 04, 59, etc.)
+    second: "2-digit", // 2-digit second (e.g. 03, 47, etc.)
   }).format(date);
 }
 
@@ -16,8 +17,11 @@ function App() {
   const [allowSound, setAllowSound] = useState(true);
   const [time, setTime] = useState(formatTime(new Date()));
 
-  // Will be be AM or PM
+  // console.log(time);
+
+  // The last two characters of the time string will be either "AM" or "PM"
   const partOfDay = time.slice(-2);
+  // console.log(partOfDay);
 
   const workouts = useMemo(() => {
     return [
@@ -45,12 +49,14 @@ function App() {
   }, [partOfDay]);
 
   useEffect(function () {
+    // Every 1 second, update the time and format it
     const id = setInterval(function () {
       setTime(formatTime(new Date()));
     }, 1000);
 
+    // When the component is no longer rendered, clean up the interval
     return () => clearInterval(id);
-  }, []);
+  }, []); // The dependency array is empty, meaning this effect will only run on mount and unmount.
 
   return (
     <main>
