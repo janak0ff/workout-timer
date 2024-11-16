@@ -9,12 +9,16 @@ function Calculator({ workouts, allowSound }) {
 
   const [duration, setDuration] = useState(0);
 
-  /**
-   * Play a sound when the user interacts with the calculator.
-   * If allowSound is false, do nothing.
-   */
-  const playSound = useCallback(
-    function () {
+  useEffect(() => {
+    setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
+  }, [number, sets, speed, durationBreak]);
+
+  useEffect(() => {
+    /**
+     * Play a sound when the user interacts with the calculator.
+     * If allowSound is false, do nothing.
+     */
+    const playSound = function () {
       if (!allowSound) return;
 
       // Create a new Audio object with the sound file
@@ -22,14 +26,9 @@ function Calculator({ workouts, allowSound }) {
 
       // Play the sound
       sound.play();
-    },
-    [allowSound]
-  );
-
-  useEffect(() => {
-    setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
+    };
     playSound();
-  }, [number, sets, speed, durationBreak, playSound]);
+  }, [allowSound, duration]);
 
   // const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
   const mins = Math.floor(duration);
@@ -37,12 +36,10 @@ function Calculator({ workouts, allowSound }) {
 
   function handleInc() {
     setDuration((duration) => Math.ceil(duration) + 1);
-    playSound();
   }
 
   function handleDec() {
     setDuration((duration) => (duration > 1 ? Math.ceil(duration) - 1 : 0));
-    playSound();
   }
 
   return (
