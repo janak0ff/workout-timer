@@ -1,48 +1,47 @@
-import { memo, useCallback, useEffect, useState } from "react";
-import clickSound from "./ClickSound.m4a";
+import { memo, useCallback, useEffect, useState } from "react"; // Import React hooks and memo function to optimize rendering
+import clickSound from "./ClickSound.m4a"; // Import a sound file for audio feedback
 
+// Calculator component to calculate workout duration and handle user inputs
 function Calculator({ workouts, allowSound }) {
-  const [number, setNumber] = useState(workouts.at(0).numExercises);
-  const [sets, setSets] = useState(3);
-  const [speed, setSpeed] = useState(90);
-  const [durationBreak, setDurationBreak] = useState(5);
+  // State hooks to manage workout details and user preferences
+  const [number, setNumber] = useState(workouts.at(0).numExercises); // Number of exercises in the selected workout
+  const [sets, setSets] = useState(3); // Default number of workout sets
+  const [speed, setSpeed] = useState(90); // Speed of exercises in seconds per exercise
+  const [durationBreak, setDurationBreak] = useState(5); // Duration of break between sets in minutes
+  const [duration, setDuration] = useState(0); // Total workout duration calculated based on inputs
 
-  const [duration, setDuration] = useState(0);
-
+  // useEffect to calculate total workout duration whenever inputs change
   useEffect(() => {
     setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
-  }, [number, sets, speed, durationBreak]);
+  }, [number, sets, speed, durationBreak]); // Dependencies for re-calculating duration
 
+  // useEffect to play a sound when interaction occurs, controlled by allowSound
   useEffect(() => {
-    /**
-     * Play a sound when the user interacts with the calculator.
-     * If allowSound is false, do nothing.
-     */
     const playSound = function () {
-      if (!allowSound) return;
+      if (!allowSound) return; // Exit if sound is not allowed
 
-      // Create a new Audio object with the sound file
-      const sound = new Audio(clickSound);
-
-      // Play the sound
-      sound.play();
+      const sound = new Audio(clickSound); // Create a new Audio object with the imported sound file
+      sound.play(); // Play the sound
     };
-    playSound();
+    playSound(); // Call the playSound function whenever allowSound or duration changes
   }, [allowSound, duration]);
 
+  // useEffect to update the document title and log duration and sets
   useEffect(() => {
-    console.log(duration, sets);
-    document.title = `Your ${number}-exercise workout`;
-  }, [duration, sets, number]);
+    console.log(duration, sets); // Log current duration and number of sets to console
+    document.title = `Your ${number}-exercise workout`; // Update the browser tab title
+  }, [duration, sets, number]); // Dependencies for updating title and logging
 
-  // const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
-  const mins = Math.floor(duration);
-  const seconds = (duration - mins) * 60;
+  // Calculate minutes and seconds from the total workout duration
+  const mins = Math.floor(duration); // Get the whole number of minutes
+  const seconds = (duration - mins) * 60; // Calculate remaining seconds
 
+  // Handler to increase duration by one minute
   function handleInc() {
     setDuration((duration) => Math.ceil(duration) + 1);
   }
 
+  // Handler to decrease duration by one minute, ensuring it doesn't go below 0
   function handleDec() {
     setDuration((duration) => (duration > 1 ? Math.ceil(duration) - 1 : 0));
   }
@@ -108,4 +107,4 @@ function Calculator({ workouts, allowSound }) {
   );
 }
 
-export default memo(Calculator);
+export default memo(Calculator); // Export the Calculator component as a memoized component to prevent unnecessary re-renders
